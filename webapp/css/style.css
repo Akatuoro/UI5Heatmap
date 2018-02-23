@@ -11,3 +11,11 @@
 .sapMPageEnableScrolling {
 	overflow: hidden !important;
 }
+
+.sapMPanelContent {
+	overflow: hidden !important;
+}
+
+.sapUiComponentContainer {
+	overflow: hidden !important;
+}

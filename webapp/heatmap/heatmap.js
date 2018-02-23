@@ -2,36 +2,12 @@ sap.ui.define([
 	"QuickStartApplication/heatmap/defaultData"
 ], function(defaultData) {
 
-	function generateForBounds(left, top, right, bottom) {
-		var routes = [];
-		for (var i = 0; i < 5; i++) {
-			var points = [];/*[
-				[4.296427, 50.869546],
-				[4.433356, 50.830115],
-				[4.307021, 50.837205]
-			];*/
-			for (var j = 0; j < 5; j++) {
-				points.push([
-					left + (right - left) * Math.random(),
-					top - (top - bottom) * Math.random()
-				]);
-			}
-			for (var z = 0; z < 5; z++) {
-				if (Math.random() > 0.5) {
-					routes.push(points);
-				}
-			}
-			routes.push(points);
-		}
-		return routes;
-	}
-
 	return {
 		init: function(canvas) {
 			this.canvas = canvas;
 			this.ctx = canvas.getContext('2d');
 			this.max = 4;
-			this.lineWidth = 2;
+			this.lineWidth = 4;
 			this.data = defaultData.routes || [];
 		},
 
@@ -82,22 +58,21 @@ sap.ui.define([
 			var top = upperLeft[1];
 			var right = lowerRight[0];
 			var bottom = lowerRight[1];
-			var data = generateForBounds(left, top, right, bottom);
 			var dx = right - left;
 			var dy = top - bottom;
 			var w = this.canvas.width;
 			var h = this.canvas.height;
-
-			for (var i = 0; i < data.length; i++) {
-				var route = data[i];
+			
+			for (var i = 0; i < this.data.length; i++) {
+				var route = this.data[i];
 				ctx.globalAlpha = Math.min(Math.max(1 / this.max, 0.05), 1);
 				ctx.lineWidth = this.lineWidth; // if the same stroke intersects, alphas don't add up
 
 				ctx.beginPath();
 				for (var j = 0; j < route.length; j++) {
 					var c = route[j];
-					var x = (c[0] - left) / dx * w;
-					var y = (top - c[1]) / dy * h;
+					var x = (c.lng - left) / dx * w;
+					var y = (top - c.lat) / dy * h;
 					//ctx.fillRect(x, y, 10, 10);
 					ctx.lineTo(x, y);
 					ctx.stroke();

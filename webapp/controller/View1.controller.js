@@ -4,6 +4,10 @@ sap.ui.define([
 ], function(Controller, HeatMap) {
 	"use strict";
 	var oGeoMap;
+	var oCanvas;
+	var oViewPort;
+	var oZoom;
+	var bInit = false;
 
 	function debounce(func, wait, transform) {
 		var timeout;
@@ -20,9 +24,21 @@ sap.ui.define([
 	}
 
 	var updateCanvas = debounce(function(viewPort, zoom) {
-		console.log("Updating");
-		HeatMap.draw(viewPort, zoom);
+		if (bInit) {
+			HeatMap.draw(viewPort, zoom);
+		}
 	}, 300);
+
+	function resizeCanvas() {
+		bInit = true;
+		var node = oGeoMap.getDomRef();
+		oCanvas.width = $(node).width();
+		oCanvas.height = $(node).height();
+		updateCanvas(oViewPort, oZoom);
+	}
+	
+	window.onload = resizeCanvas;
+	window.addEventListener("resize", resizeCanvas);
 
 	return Controller.extend("QuickStartApplication.controller.View1", {
 		onInit: function() {
@@ -57,31 +73,19 @@ sap.ui.define([
 			oGeoMap.setRefMapLayerStack("DEFAULT");
 			oGeoMap.attachEvent("centerChanged", this.onViewPortChanged);
 			oGeoMap.attachEvent("zoomChanged", this.onViewPortChanged);
-		},
 
-		onAfterRendering: function() {
-			var node = this.getView().byId("GeoMap").getDomRef();
-			var canvas = document.createElement("canvas");
+			var canvas = oCanvas = document.createElement("canvas");
 			canvas.className = "heatmap";
-			canvas.width = $(node).width();
-			canvas.height = $(node).height();
 			HeatMap.init(canvas);
-			node.addEventListener("resize", function() {
-				canvas.width = $(node).width();
-				canvas.height = $(node).height();
-			});
 			document.getElementById("content").appendChild(canvas);
 		},
 
+		onAfterRendering: function() {},
+
 		onViewPortChanged: function(oEvent) {
-			var viewPort = oEvent.getParameter("viewportBB");
-			var zoom = parseInt(oEvent.getParameter("zoomLevel"));
-			console.log(oEvent.getParameters(), zoom, typeof zoom) ;
+			var viewPort = oViewPort = oEvent.getParameter("viewportBB");
+			var zoom = oZoom = parseInt(oEvent.getParameter("zoomLevel"));
 			updateCanvas(viewPort, zoom);
-			console.log({
-				upperLeft: viewPort.upperLeft,
-				lowerRight: viewPort.lowerRight
-			});
 		}
 	});
 

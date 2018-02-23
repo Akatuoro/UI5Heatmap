@@ -3,10 +3,10 @@
 	<App>
 		<pages>
 			<Page showHeader="false">
-				<VBox id="mapcontainer">
-					<vbm:GeoMap id="GeoMap" height="387px"></vbm:GeoMap>
+				<Panel class="sapUiNoContentPadding" id="mapcontainer" height="100%">
+					<vbm:GeoMap id="GeoMap" height="calc(100% - 210px)" width="100%"></vbm:GeoMap>
 					<uni:CalendarDateInterval width="100%"/>
-				</VBox>
+				</Panel>
 			</Page>
 		</pages>
 	</App>
