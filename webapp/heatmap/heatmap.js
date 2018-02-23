@@ -41,13 +41,30 @@ sap.ui.define([
 			return ctx.getImageData(0, 0, 1, 256).data;
 		},
 	
-		draw: function() {
+		draw: function(boundingBox) {
 			if (!this.gradient) {
 				this.gradient = this.createGradient(this.defaultGradient);
 			}
 			var ctx = this.ctx;
+			ctx.save();
 	
 			ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			
+			if (boundingBox) {
+				var upperLeft = boundingBox.upperLeft.split(";");
+				var lowerRight = boundingBox.lowerRight.split(";");
+				
+				var left = upperLeft[0];
+				var top = upperLeft[1];
+				var right = lowerRight[0];
+				var bottom = lowerRight[1];
+				
+				ctx.translate(-left, -top);
+				var scale_x = (this.canvas.width) / (right - left);
+				var scale_y = (this.canvas.height) / (bottom - top);
+				
+				ctx.scale(scale_x, scale_y);
+			}
 	
 			for (var i = 0; i < this.data.length; i++) {
 				var route = this.data[i];
@@ -71,6 +88,8 @@ sap.ui.define([
 			var imageData = ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
 			this.applyGradient(imageData.data, this.gradient);
 			ctx.putImageData(imageData, 0, 0);
+			
+			ctx.restore();
 		},
 	
 		applyGradient: function(imageData, gradient) {
