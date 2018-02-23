@@ -1,5 +1,6 @@
 sap.ui.define([
-], function() {
+	"heatmap/defaultData"
+], function(defaultData) {
 	
 	return {
 		init: function(canvas) {
@@ -8,7 +9,7 @@ sap.ui.define([
 			
 			this.max = 4;
 			this.lineWidth = 4;
-			this.data = [];
+			this.data = defaultData ? defaultData.routes || [] : [];
 		},
 		
 		
