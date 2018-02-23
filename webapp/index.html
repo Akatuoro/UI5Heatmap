@@ -19,17 +19,18 @@
 
 		<script>
 			sap.ui.getCore().attachInit(function() {
-				new sap.m.Shell({
-					app: new sap.ui.core.ComponentContainer({
-						height : "100%",
-						name : "QuickStartApplication"
-					})
+				new sap.ui.core.ComponentContainer({
+					height : "100%",
+					name : "QuickStartApplication"
 				}).placeAt("content");
 			});
 		</script>
 	</head>
 
 	<body class="sapUiBody" id="content">
+		<canvas class="heatmap" id="heatmap">
+			
+		</canvas>
 	</body>
 
 </html>

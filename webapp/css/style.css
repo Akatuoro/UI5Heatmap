@@ -1,8 +1,13 @@
 /* Enter your custom styles here */
 
-canvas {
+.heatmap {
 	position: absolute;
-	width: 800 !important;
-	height: 552 !important;
+	top: 0px;
+	left: 0px;
 	z-index: 5;
+	pointer-events: none;
+}
+
+.sapMPageEnableScrolling {
+	overflow: hidden !important;
 }

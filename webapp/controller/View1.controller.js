@@ -1,54 +1,82 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller"
-], function(Controller) {
+	"sap/ui/core/mvc/Controller",
+	"heatmap/heatmap"
+], function(Controller, HeatMap) {
 	"use strict";
 	var oGeoMap;
+
+	function debounce(func, wait, transform) {
+		var timeout;
+		return function(oEvent) {
+			var context = this;
+			var args = (transform) ? transform.apply(this, arguments) : arguments;
+			var later = function() {
+				timeout = null;
+				func.apply(context, args);
+			};
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		};
+	}
+
+	var updateCanvas = debounce(function(viewPort) {
+		var canvas = document.getElementById("canvas");
+		console.log("Updating");
+		HeatMap.draw();
+	}, 300);
 
 	return Controller.extend("QuickStartApplication.controller.View1", {
 		onInit: function() {
 			oGeoMap = this.getView().byId("GeoMap");
 			var oMapConfig = {
-			  "MapProvider": [{
-			  "name": "HEREMAPS",
-			  "type": "",
-			  "description": "",
-			  "tileX": "256",
-			  "tileY": "256",
-			  "maxLOD": "20",
-			  "copyright": "Tiles Courtesy of HERE Maps",
-			  "Source": [{
-				  "id": "s1",
-				  "url": "http://toolserver.org/tiles/hikebike/{LOD}/{X}/{Y}.png"
-				  }
-			  ]
-			  }],
-			  "MapLayerStacks": [{
-			  "name": "DEFAULT",
-			  "MapLayer": {
-			  "name": "layer1",
-			  "refMapProvider": "HEREMAPS",
-			  "opacity": "1.0",
-			  "colBkgnd": "RGB(255,255,255)"
-			  }
-			  }]
+				"MapProvider": [{
+					"name": "HEREMAPS",
+					"type": "",
+					"description": "",
+					"tileX": "256",
+					"tileY": "256",
+					"maxLOD": "20",
+					"copyright": "Tiles Courtesy of HERE Maps",
+					"Source": [{
+						"id": "s1",
+						"url": "http://toolserver.org/tiles/hikebike/{LOD}/{X}/{Y}.png"
+					}]
+				}],
+				"MapLayerStacks": [{
+					"name": "DEFAULT",
+					"MapLayer": {
+						"name": "layer1",
+						"refMapProvider": "HEREMAPS",
+						"opacity": "1.0",
+						"colBkgnd": "RGB(255,255,255)"
+					}
+				}]
 			};
 			oGeoMap.setMapConfiguration(oMapConfig);
 			oGeoMap.setRefMapLayerStack("DEFAULT");
-			console.log(oGeoMap);
-			oGeoMap.attachEvent("centerChanged", this.onCenterChanged);
-			console.log(document.getElementById("__shell0"));
+			oGeoMap.attachEvent("centerChanged", this.onViewPortChanged);
+			oGeoMap.attachEvent("zoomChanged", this.onViewPortChanged);
 			
-			var node = document.getElementById("content");
-			var canvas = document.createElement("canvas");
-			node.appendChild(canvas);
-			canvas.style.width = 600;
-			canvas.style.height = 600;
-			canvas.style.top = "0px";
-			canvas.style.left = "0px";
+			var canvas = document.getElementById("canvas");
+			Heatmap.init(canvas);
 		},
-		onCenterChanged: function(oEvent) {
+
+		onAfterRendering: function() {
+			var node = this.getView().byId("GeoMap").getDomRef();
+			var canvas = document.getElementById("canvas");
+			node.addEventListener("resize", function() {
+				canvas.width = $(node).width();
+				canvas.height = $(node).height();
+			});
+		},
+
+		onViewPortChanged: function(oEvent) {
 			var viewport = oEvent.getParameter("viewportBB");
-			console.log({upperLeft: viewport.upperLeft, lowerRight: viewport.lowerRight});
+			updateCanvas(viewport);
+			console.log({
+				upperLeft: viewport.upperLeft,
+				lowerRight: viewport.lowerRight
+			});
 		}
 	});
 

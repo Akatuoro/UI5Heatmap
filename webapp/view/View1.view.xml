@@ -1,9 +1,11 @@
-<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:vbm="sap.ui.vbm" controllerName="QuickStartApplication.controller.View1">
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:uni="sap.ui.unified" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:vbm="sap.ui.vbm"
+	controllerName="QuickStartApplication.controller.View1">
 	<App>
 		<pages>
-			<Page title="Your Quick Start application is ready!">
+			<Page showHeader="false">
 				<VBox id="mapcontainer">
-				<vbm:GeoMap id="GeoMap"></vbm:GeoMap>
+					<vbm:GeoMap id="GeoMap" height="387px"></vbm:GeoMap>
+					<uni:CalendarDateInterval width="100%"/>
 				</VBox>
 			</Page>
 		</pages>
