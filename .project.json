@@ -38,5 +38,10 @@
     "loadJSONFiles": true,
     "loadCustomRequests": false,
     "mockRequestsFilePath": ""
+  },
+  "hcpdeploy": {
+    "account": "d068628trial",
+    "name": "ui5heatmap",
+    "lastVersionWeTriedToDeploy": "1.0.0"
   }
 }

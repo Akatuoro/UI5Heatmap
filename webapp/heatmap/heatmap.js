@@ -2,13 +2,18 @@ sap.ui.define([
 	"QuickStartApplication/heatmap/defaultData"
 ], function(defaultData) {
 
+	var accidents = [];
+	$.get("/destinations/createAccident.xsjs", function(data) {
+		accidents = JSON.parse(data);
+	});
+
 	return {
 		init: function(canvas) {
 			this.canvas = canvas;
 			this.ctx = canvas.getContext('2d');
 			this.max = 4;
 			this.lineWidth = 4;
-			this.data = defaultData.routes || [];
+			this.routes = defaultData.routes || [];
 		},
 
 		defaultGradient: {
@@ -18,7 +23,7 @@ sap.ui.define([
 		},
 
 		setData: function(data) {
-			this.data = data;
+			this.routes = data;
 		},
 
 		createGradient: function(grad) {
@@ -62,17 +67,19 @@ sap.ui.define([
 			var dy = top - bottom;
 			var w = this.canvas.width;
 			var h = this.canvas.height;
-			
-			for (var i = 0; i < this.data.length; i++) {
-				var route = this.data[i];
-				ctx.globalAlpha = Math.min(Math.max(1 / this.max, 0.05), 1);
-				ctx.lineWidth = this.lineWidth; // if the same stroke intersects, alphas don't add up
+			var sx = w / dx;
+			var sy = h / dy;
+			ctx.globalAlpha = Math.min(Math.max(1 / this.max, 0.05), 1);
+			ctx.lineWidth = this.lineWidth; // if the same stroke intersects, alphas don't add up
+
+			for (var i = 0; i < this.routes.length; i++) {
+				var route = this.routes[i];
 
 				ctx.beginPath();
 				for (var j = 0; j < route.length; j++) {
 					var c = route[j];
-					var x = (c.lng - left) / dx * w;
-					var y = (top - c.lat) / dy * h;
+					var x = (c.lng - left) * sx;
+					var y = (top - c.lat) * sy;
 					//ctx.fillRect(x, y, 10, 10);
 					ctx.lineTo(x, y);
 					ctx.stroke();
@@ -81,26 +88,18 @@ sap.ui.define([
 				}
 			}
 
-			/*
-			for (var i = 0; i < this.data.length; i++) {
-				var route = this.data[i];
-
-				//ctx.shadowOffsetX = ctx.shadowOffsetY = 15 * 2;
-				ctx.moveTo(route[0][0], route[0][1]);
-				for (var j = 1; j < route.length; j++) {
-					var lng = route[j][0];
-					var lat = route[j][1];
-					console.log("Long:", lng, long2tile(lng), left, "-", right);
-					console.log("Lat:", lat, lat2tile(lat), bottom, "-", top);
-					//ctx.shadowBlur = 200;
-					//ctx.shadowColor = 'black';
-
-					ctx.lineTo(long2tile(route[j][0]), lat2tile(route[j][1]));
-					ctx.stroke();
-					ctx.beginPath();
-					ctx.moveTo(long2tile(route[j][0]), lat2tile(route[j][1]));
-				}
-			}*/
+			var radius = Math.round((100 / 113320) * sx);
+			ctx.shadowBlur = radius;
+			ctx.shadowColor = "black";
+			for (i = 0; i < accidents.length; i++) {
+				ctx.beginPath();
+				var accident = accidents[i];
+				x = (accident.LONGITUDE - left) * sx;
+				y = (top - accident.LATITUDE) * sy;
+				// 1 lat = 113.32km => 500m = 500m/113320m
+				ctx.arc(x, y, 5, 0, 2 * Math.PI);
+				ctx.fill();
+			}
 
 			var imageData = ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
 			this.applyGradient(imageData.data, this.gradient);

@@ -11,6 +11,15 @@
       "description": "SAPUI5 Resources"
     },
     {
+      "path": "/destinations",
+      "target": {
+        "type": "destination",
+        "name": "heatmap",
+        "entryPath": "/"
+      },
+      "description": "HeatMap Resources"
+    },
+    {
       "path": "/test-resources",
       "target": {
         "type": "service",
