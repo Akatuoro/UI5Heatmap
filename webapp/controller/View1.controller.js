@@ -1,13 +1,13 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
-	"heatmap/heatmap"
+	"QuickStartApplication/heatmap/heatmap"
 ], function(Controller, HeatMap) {
 	"use strict";
 	var oGeoMap;
 
 	function debounce(func, wait, transform) {
 		var timeout;
-		return function(oEvent) {
+		return function() {
 			var context = this;
 			var args = (transform) ? transform.apply(this, arguments) : arguments;
 			var later = function() {
@@ -19,10 +19,9 @@ sap.ui.define([
 		};
 	}
 
-	var updateCanvas = debounce(function(viewPort) {
-		var canvas = document.getElementById("canvas");
+	var updateCanvas = debounce(function(viewPort, zoom) {
 		console.log("Updating");
-		HeatMap.draw();
+		HeatMap.draw(viewPort, zoom);
 	}, 300);
 
 	return Controller.extend("QuickStartApplication.controller.View1", {
@@ -53,29 +52,35 @@ sap.ui.define([
 				}]
 			};
 			oGeoMap.setMapConfiguration(oMapConfig);
+			oGeoMap.setInitialPosition("4.232826232910156;50.789895149448974;1");
+			oGeoMap.setInitialZoom(10);
 			oGeoMap.setRefMapLayerStack("DEFAULT");
 			oGeoMap.attachEvent("centerChanged", this.onViewPortChanged);
 			oGeoMap.attachEvent("zoomChanged", this.onViewPortChanged);
-			
-			var canvas = document.getElementById("canvas");
-			Heatmap.init(canvas);
 		},
 
 		onAfterRendering: function() {
 			var node = this.getView().byId("GeoMap").getDomRef();
-			var canvas = document.getElementById("canvas");
+			var canvas = document.createElement("canvas");
+			canvas.className = "heatmap";
+			canvas.width = $(node).width();
+			canvas.height = $(node).height();
+			HeatMap.init(canvas);
 			node.addEventListener("resize", function() {
 				canvas.width = $(node).width();
 				canvas.height = $(node).height();
 			});
+			document.getElementById("content").appendChild(canvas);
 		},
 
 		onViewPortChanged: function(oEvent) {
-			var viewport = oEvent.getParameter("viewportBB");
-			updateCanvas(viewport);
+			var viewPort = oEvent.getParameter("viewportBB");
+			var zoom = parseInt(oEvent.getParameter("zoomLevel"));
+			console.log(oEvent.getParameters(), zoom, typeof zoom) ;
+			updateCanvas(viewPort, zoom);
 			console.log({
-				upperLeft: viewport.upperLeft,
-				lowerRight: viewport.lowerRight
+				upperLeft: viewPort.upperLeft,
+				lowerRight: viewPort.lowerRight
 			});
 		}
 	});
