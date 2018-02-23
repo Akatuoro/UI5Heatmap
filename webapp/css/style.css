@@ -1,0 +1,8 @@
+/* Enter your custom styles here */
+
+canvas {
+	position: absolute;
+	width: 800 !important;
+	height: 552 !important;
+	z-index: 5;
+}
