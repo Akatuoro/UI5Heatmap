@@ -1,5 +1,5 @@
 sap.ui.define([
-	"heatmap/defaultData"
+	"QuickStartApplication/heatmap/defaultData"
 ], function(defaultData) {
 	
 	return {
