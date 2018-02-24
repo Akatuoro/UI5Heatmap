@@ -45,13 +45,14 @@ sap.ui.define([
 			oGeoMap = this.getView().byId("GeoMap");
 			var oMapConfig = {
 				"MapProvider": [{
-					"name": "HEREMAPS",
+					"name": "Openstreetmap",
 					"type": "",
 					"description": "",
 					"tileX": "256",
 					"tileY": "256",
-					"maxLOD": "20",
-					"copyright": "Tiles Courtesy of HERE Maps",
+					"minLOD": 3,
+					"maxLOD": "18",
+					"copyright": "© OpenStreetMap under ODbL v1.0",
 					"Source": [{
 						"id": "s1",
 						"url": "http://toolserver.org/tiles/hikebike/{LOD}/{X}/{Y}.png"
@@ -61,7 +62,7 @@ sap.ui.define([
 					"name": "DEFAULT",
 					"MapLayer": {
 						"name": "layer1",
-						"refMapProvider": "HEREMAPS",
+						"refMapProvider": "Openstreetmap",
 						"opacity": "1.0",
 						"colBkgnd": "RGB(255,255,255)"
 					}
